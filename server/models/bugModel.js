@@ -88,10 +88,21 @@ const deleteBug = (id) => {
 
     return db.execute(query, [id]);
 };
+// Assign bug to developer
+const assignBug = (bugId, developerId) => {
+    const query = `
+        UPDATE bugs
+        SET assigned_to = ?
+        WHERE id = ?
+    `;
+
+    return db.execute(query, [developerId, bugId]);
+};
 module.exports = {
   createBug,
   getAllBugs,
   getBugById,
   updateBug,
-  deleteBug
+  deleteBug,
+  assignBug
 };

@@ -6,7 +6,8 @@ const {
     fetchAllBugs,
     fetchBugById,
     editBug,
-     removeBug
+     removeBug,
+     assignBugToDeveloper
 } = require("../controllers/bugController");
 const verifyToken = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
@@ -16,6 +17,12 @@ router.post("/", verifyToken, createNewBug);
 router.get("/", verifyToken, fetchAllBugs);
 router.get("/:id", verifyToken, fetchBugById);
 router.put("/:id", verifyToken, editBug);
+router.put(
+    "/:id/assign",
+    verifyToken,
+    authorizeRoles("admin"),
+    assignBugToDeveloper
+);
 router.delete(
     "/:id",
     verifyToken,

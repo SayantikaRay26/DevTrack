@@ -1,5 +1,5 @@
-const { createBug, getAllBugs,getBugById,updateBug, deleteBug } = require("../models/bugModel");
-
+const { createBug, getAllBugs,getBugById,updateBug, deleteBug,assignBug } = require("../models/bugModel");
+const { findUserById } = require("../models/userModel");
 // Create a new bug
 const createNewBug = async (req, res) => {
     try {
@@ -143,11 +143,56 @@ const removeBug = async (req, res) => {
         });
     }
 };
+// Assign bug to a developer
+const assignBugToDeveloper = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { developerId } = req.body;
+        if (!developerId) {
+          return res.status(400).json({
+             message: "Developer ID is required."
+
+    });
+}
+const [bugs] = await getBugById(id);
+
+if (bugs.length === 0) {
+    return res.status(404).json({
+        message: "Bug not found."
+    });
+}
+const users = await findUserById(developerId);
+
+if (users.length === 0) {
+    return res.status(404).json({
+        message: "Developer not found."
+    });
+}
+if (users[0].role !== "developer") {
+    return res.status(400).json({
+        message: "Selected user is not a developer."
+    });
+}
+await assignBug(id, developerId);
+
+res.status(200).json({
+    message: "Bug assigned successfully!"
+});
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};
+
 
 module.exports = {
     createNewBug,
     fetchAllBugs,
     fetchBugById,
     editBug,
-    removeBug
+    removeBug,
+    assignBugToDeveloper
 };
