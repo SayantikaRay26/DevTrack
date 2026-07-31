@@ -9,11 +9,17 @@ const {
      removeBug
 } = require("../controllers/bugController");
 const verifyToken = require("../middleware/authMiddleware");
+const authorizeRoles = require("../middleware/roleMiddleware");
 
 // Create a new bug
 router.post("/", verifyToken, createNewBug);
 router.get("/", verifyToken, fetchAllBugs);
 router.get("/:id", verifyToken, fetchBugById);
 router.put("/:id", verifyToken, editBug);
-router.delete("/:id", verifyToken, removeBug);
+router.delete(
+    "/:id",
+    verifyToken,
+    authorizeRoles("admin"),
+    removeBug
+);
 module.exports = router;
