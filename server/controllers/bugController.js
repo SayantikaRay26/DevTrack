@@ -1,4 +1,4 @@
-const { createBug, getAllBugs,getBugById,updateBug, deleteBug,assignBug } = require("../models/bugModel");
+const { createBug, getAllBugs,getBugById,updateBug, deleteBug,assignBug,getAssignedBugs } = require("../models/bugModel");
 const { findUserById } = require("../models/userModel");
 // Create a new bug
 const createNewBug = async (req, res) => {
@@ -186,6 +186,20 @@ res.status(200).json({
         });
     }
 };
+// Get bugs assigned to the logged-in developer
+const fetchAssignedBugs = async (req, res) => {
+    try {
+       const developerId = req.user.id;
+       const [bugs] = await getAssignedBugs(developerId);
+       res.status(200).json(bugs);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};
 
 
 module.exports = {
@@ -194,5 +208,6 @@ module.exports = {
     fetchBugById,
     editBug,
     removeBug,
-    assignBugToDeveloper
+    assignBugToDeveloper,
+    fetchAssignedBugs
 };

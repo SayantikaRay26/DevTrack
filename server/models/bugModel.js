@@ -98,11 +98,32 @@ const assignBug = (bugId, developerId) => {
 
     return db.execute(query, [developerId, bugId]);
 };
+// Get bugs assigned to a developer
+const getAssignedBugs = (developerId) => {
+    const query = `
+        SELECT
+            id,
+            title,
+            description,
+            priority,
+            status,
+            reported_by,
+            assigned_to,
+            created_at,
+            updated_at
+        FROM bugs
+        WHERE assigned_to = ?
+        ORDER BY created_at DESC
+    `;
+
+    return db.execute(query, [developerId]);
+};
 module.exports = {
   createBug,
   getAllBugs,
   getBugById,
   updateBug,
   deleteBug,
-  assignBug
+  assignBug,
+  getAssignedBugs
 };
