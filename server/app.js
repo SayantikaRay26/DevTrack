@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const commentRoutes = require("./routes/commentRoutes");
 const express = require("express");
 const db = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
@@ -9,6 +9,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/bugs", bugRoutes);
+app.use("/api/bugs", commentRoutes);
 
 const PORT = process.env.PORT || 3001;
 
