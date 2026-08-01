@@ -1,3 +1,4 @@
+const { addHistory } = require("../models/historyModel");
 const { createBug, getAllBugs,getBugById,updateBug, deleteBug,assignBug,getAssignedBugs,updateBugStatus} = require("../models/bugModel");
 const { findUserById } = require("../models/userModel");
 // Create a new bug
@@ -175,6 +176,12 @@ if (users[0].role !== "developer") {
 }
 await assignBug(id, developerId);
 
+await addHistory(
+    id,
+    req.user.id,
+    `Assigned bug to developer ID ${developerId}`
+);
+
 res.status(200).json({
     message: "Bug assigned successfully!"
 });
@@ -236,12 +243,18 @@ if (bug.assigned_to !== req.user.id) {
         message: "You are not assigned to this bug."
     });
 }
-
 await updateBugStatus(id, status);
+
+await addHistory(
+    id,
+    req.user.id,
+    `Changed status to ${status}`
+);
 
 res.status(200).json({
     message: "Bug status updated successfully!"
 });
+
     } catch (error) {
         console.error(error);
 

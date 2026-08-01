@@ -1,4 +1,5 @@
 require("dotenv").config();
+const historyRoutes = require("./routes/historyRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const express = require("express");
 const db = require("./config/db");
@@ -10,6 +11,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/bugs", bugRoutes);
 app.use("/api/bugs", commentRoutes);
+app.use("/api/bugs", historyRoutes);
 
 const PORT = process.env.PORT || 3001;
 

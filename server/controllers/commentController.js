@@ -1,6 +1,6 @@
 const { addComment, getCommentsByBugId} = require("../models/commentModel");
 const { getBugById } = require("../models/bugModel");
-
+const { addHistory } = require("../models/historyModel");
 // Add a comment to a bug
 const createComment = async (req, res) => {
     try {
@@ -22,12 +22,18 @@ const createComment = async (req, res) => {
                 message: "Bug not found."
             });
         }
+await addComment(id, userId, comment);
 
-        await addComment(id, userId, comment);
+await addHistory(
+    id,
+    userId,
+    "Added a comment"
+);
 
-        res.status(201).json({
-            message: "Comment added successfully!"
-        });
+res.status(201).json({
+    message: "Comment added successfully!"
+});
+        
 
     } catch (error) {
         console.error(error);
