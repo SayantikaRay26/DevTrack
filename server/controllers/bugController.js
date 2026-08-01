@@ -1,4 +1,4 @@
-const { createBug, getAllBugs,getBugById,updateBug, deleteBug,assignBug,getAssignedBugs } = require("../models/bugModel");
+const { createBug, getAllBugs,getBugById,updateBug, deleteBug,assignBug,getAssignedBugs,updateBugStatus} = require("../models/bugModel");
 const { findUserById } = require("../models/userModel");
 // Create a new bug
 const createNewBug = async (req, res) => {
@@ -200,6 +200,56 @@ const fetchAssignedBugs = async (req, res) => {
         });
     }
 };
+// Update bug status
+const changeBugStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        if (!status) {
+          return res.status(400).json({
+            message: "Status is required."
+          });
+        }
+        const allowedStatuses = [
+    "Open",
+    "In Progress",
+    "Resolved",
+    "Closed"
+];
+
+if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({
+        message: "Invalid status."
+    });
+}
+const [bugs] = await getBugById(id);
+
+if (bugs.length === 0) {
+    return res.status(404).json({
+        message: "Bug not found."
+    });
+}
+const bug = bugs[0];
+
+if (bug.assigned_to !== req.user.id) {
+    return res.status(403).json({
+        message: "You are not assigned to this bug."
+    });
+}
+
+await updateBugStatus(id, status);
+
+res.status(200).json({
+    message: "Bug status updated successfully!"
+});
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};
 
 
 module.exports = {
@@ -209,5 +259,6 @@ module.exports = {
     editBug,
     removeBug,
     assignBugToDeveloper,
-    fetchAssignedBugs
+    fetchAssignedBugs,
+    changeBugStatus
 };

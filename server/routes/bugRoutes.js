@@ -8,7 +8,8 @@ const {
     editBug,
      removeBug,
      assignBugToDeveloper,
-     fetchAssignedBugs
+     fetchAssignedBugs,
+     changeBugStatus
 } = require("../controllers/bugController");
 const verifyToken = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
@@ -31,6 +32,12 @@ router.put(
     verifyToken,
     authorizeRoles("admin"),
     assignBugToDeveloper
+);
+router.put(
+    "/:id/status",
+    verifyToken,
+    authorizeRoles("developer"),
+    changeBugStatus
 );
 router.delete(
     "/:id",

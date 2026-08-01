@@ -118,6 +118,17 @@ const getAssignedBugs = (developerId) => {
 
     return db.execute(query, [developerId]);
 };
+// Update bug status
+const updateBugStatus = (bugId, status) => {
+    const query = `
+        UPDATE bugs
+        SET
+            status = ?
+        WHERE id = ?
+    `;
+
+    return db.execute(query, [status, bugId]);
+};
 module.exports = {
   createBug,
   getAllBugs,
@@ -125,5 +136,6 @@ module.exports = {
   updateBug,
   deleteBug,
   assignBug,
-  getAssignedBugs
+  getAssignedBugs,
+  updateBugStatus
 };
