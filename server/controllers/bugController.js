@@ -1,5 +1,5 @@
 const { addHistory } = require("../models/historyModel");
-const { createBug, getAllBugs,getBugById,updateBug, deleteBug,assignBug,getAssignedBugs,updateBugStatus} = require("../models/bugModel");
+const { createBug, getAllBugs,getBugById,updateBug, deleteBug,assignBug,getAssignedBugs,updateBugStatus,searchBugs,filterBugs,getPaginatedBugs,sortBugs} = require("../models/bugModel");
 const { findUserById } = require("../models/userModel");
 // Create a new bug
 const createNewBug = async (req, res) => {
@@ -207,6 +207,107 @@ const fetchAssignedBugs = async (req, res) => {
         });
     }
 };
+// Search bugs
+const searchBugList = async (req, res) => {
+    try {
+        const { search } = req.query;
+
+        if (!search) {
+            return res.status(400).json({
+                message: "Search keyword is required."
+            });
+        }
+
+        const [bugs] = await searchBugs(search);
+
+        res.status(200).json({
+            total: bugs.length,
+            bugs
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};
+// Filter bugs
+const filterBugList = async (req, res) => {
+    try {
+        const { status, priority } = req.query;
+
+        if (!status && !priority) {
+            return res.status(400).json({
+                message: "Provide at least one filter."
+            });
+        }
+
+        const [bugs] = await filterBugs(status, priority);
+
+        res.status(200).json({
+            total: bugs.length,
+            bugs
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};
+// Get paginated bugs
+const fetchPaginatedBugs = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+// Debug logs
+console.log("Page:", page, typeof page);
+console.log("Limit:", limit, typeof limit);
+console.log("Offset:", offset, typeof offset);
+
+const [bugs] = await getPaginatedBugs(limit, offset);
+
+        res.status(200).json({
+            page,
+            limit,
+            totalReturned: bugs.length,
+            bugs
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};
+// Sort bugs
+const sortBugList = async (req, res) => {
+    try {
+        const { by } = req.query;
+
+        const [bugs] = await sortBugs(by);
+
+        res.status(200).json({
+            total: bugs.length,
+            bugs
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};
 // Update bug status
 const changeBugStatus = async (req, res) => {
     try {
@@ -273,5 +374,9 @@ module.exports = {
     removeBug,
     assignBugToDeveloper,
     fetchAssignedBugs,
-    changeBugStatus
+    changeBugStatus,
+    searchBugList,
+    filterBugList,
+    fetchPaginatedBugs,
+    sortBugList
 };

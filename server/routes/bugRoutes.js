@@ -9,7 +9,11 @@ const {
      removeBug,
      assignBugToDeveloper,
      fetchAssignedBugs,
-     changeBugStatus
+     changeBugStatus,
+     searchBugList,
+     filterBugList,
+     fetchPaginatedBugs,
+     sortBugList
 } = require("../controllers/bugController");
 const verifyToken = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
@@ -17,7 +21,26 @@ const authorizeRoles = require("../middleware/roleMiddleware");
 // Create a new bug
 router.post("/", verifyToken, createNewBug);
 router.get("/", verifyToken, fetchAllBugs);
-
+router.get(
+    "/search",
+    verifyToken,
+    searchBugList
+);
+router.get(
+    "/filter",
+    verifyToken,
+    filterBugList
+);
+router.get(
+    "/page",
+    verifyToken,
+    fetchPaginatedBugs
+);
+router.get(
+    "/sort",
+    verifyToken,
+    sortBugList
+);
 router.get(
     "/my",
     verifyToken,

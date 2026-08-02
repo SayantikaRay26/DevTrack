@@ -1,4 +1,5 @@
 require("dotenv").config();
+const dashboardRoutes = require("./routes/dashboardRoutes");
 const historyRoutes = require("./routes/historyRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const express = require("express");
@@ -12,6 +13,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/bugs", bugRoutes);
 app.use("/api/bugs", commentRoutes);
 app.use("/api/bugs", historyRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 const PORT = process.env.PORT || 3001;
 

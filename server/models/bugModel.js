@@ -88,6 +88,109 @@ const deleteBug = (id) => {
 
     return db.execute(query, [id]);
 };
+// Search bugs by title
+const searchBugs = (keyword) => {
+    const query = `
+        SELECT
+            id,
+            title,
+            description,
+            priority,
+            status,
+            reported_by,
+            assigned_to,
+            created_at,
+            updated_at
+        FROM bugs
+        WHERE title LIKE ?
+        ORDER BY created_at DESC
+    `;
+
+    return db.execute(query, [`%${keyword}%`]);
+};
+// Filter bugs
+const filterBugs = (status, priority) => {
+    let query = `
+        SELECT
+            id,
+            title,
+            description,
+            priority,
+            status,
+            reported_by,
+            assigned_to,
+            created_at,
+            updated_at
+        FROM bugs
+        WHERE 1=1
+    `;
+
+    const values = [];
+
+    if (status) {
+        query += " AND status = ?";
+        values.push(status);
+    }
+
+    if (priority) {
+        query += " AND priority = ?";
+        values.push(priority);
+    }
+
+    query += " ORDER BY created_at DESC";
+
+    return db.execute(query, values);
+};
+// Get paginated bugs
+const getPaginatedBugs = (limit, offset) => {
+    const query = `
+        SELECT
+            id,
+            title,
+            description,
+            priority,
+            status,
+            reported_by,
+            assigned_to,
+            created_at,
+            updated_at
+        FROM bugs
+        ORDER BY created_at DESC
+        LIMIT ${offset}, ${limit}
+    `;
+
+    return db.query(query);
+};
+// Sort bugs
+const sortBugs = (column) => {
+    const allowedColumns = [
+        "priority",
+        "status",
+        "created_at",
+        "updated_at"
+    ];
+
+    if (!allowedColumns.includes(column)) {
+        column = "created_at";
+    }
+
+    const query = `
+        SELECT
+            id,
+            title,
+            description,
+            priority,
+            status,
+            reported_by,
+            assigned_to,
+            created_at,
+            updated_at
+        FROM bugs
+        ORDER BY ${column} DESC
+    `;
+
+    return db.query(query);
+};
 // Assign bug to developer
 const assignBug = (bugId, developerId) => {
     const query = `
@@ -137,5 +240,9 @@ module.exports = {
   deleteBug,
   assignBug,
   getAssignedBugs,
-  updateBugStatus
+  updateBugStatus,
+  searchBugs,
+  filterBugs,
+  getPaginatedBugs,
+  sortBugs
 };
